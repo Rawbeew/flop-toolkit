@@ -1,0 +1,2 @@
+# No external dependencies - all tools use Python stdlib only
+# Tested on Python 3.11+ and 3.14
