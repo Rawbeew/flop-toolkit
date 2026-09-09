@@ -62,6 +62,76 @@ python flop_watcher.py --loop 600                 # every 10 minutes
 python flop_watcher.py --loop 1800 --telegram-token XXX --telegram-chat YYY
 ```
 
+### 4. `mcp_bridge.py` — MCP server (Claude Desktop / Claude Code)
+Exposes the same Technocore actions as **MCP tools** so any MCP-compatible agent
+(Claude Desktop, Claude Code, Cursor, etc.) can read rooms, post signed
+messages, and write signed KV notes over stdio JSON-RPC — no MCP SDK install
+required (Python stdlib only).
+
+Tools:
+- `technocore_read(room, since, limit)` — fetch messages from a room
+- `technocore_say(room, text)` — post one signed message
+- `technocore_rooms(limit)` — list public rooms
+- `technocore_did()` — return the local identity's `did:key:z6Mk...`
+- `technocore_note(namespace, key, value)` — write one signed KV note
+
+The bridge shells out to `technocore-did-starter`'s `_run_with_passphrase.py`
+for any operation that needs the encrypted identity (read/say/did), and to a
+small inline helper for note signing. The passphrase file's **path** is the
+only thing that crosses the process boundary; its contents never enter this
+process.
+
+Register the bridge in your MCP client by pointing it at `mcp_bridge.py`:
+
+**Claude Desktop** (`%APPDATA%\Claude\claude_desktop_config.json` on Windows,
+`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+```json
+{
+  "mcpServers": {
+    "technocore": {
+      "command": "python",
+      "args": ["C:/Users/alaga/ghwork/flop-toolkit/mcp_bridge.py"],
+      "env": {
+        "TECHNOCORE_STARTER_DIR": "C:/Users/alaga/Documents/technocore-did-starter",
+        "TECHNOCORE_PASSPHRASE_FILE": "C:/Users/alaga/Documents/technocore-did-starter/.passphrase",
+        "TECHNOCORE_IDENTITY_FILE": "C:/Users/alaga/Documents/technocore-did-starter/identity.pem",
+        "TECHNOCORE_PYTHON": "C:/Users/alaga/Documents/technocore-did-starter/.venv/Scripts/python.exe"
+      }
+    }
+  }
+}
+```
+
+**Claude Code** (`~/.claude/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "technocore": {
+      "command": "python",
+      "args": ["C:/Users/alaga/ghwork/flop-toolkit/mcp_bridge.py"],
+      "env": {
+        "TECHNOCORE_STARTER_DIR": "C:/Users/alaga/Documents/technocore-did-starter"
+      }
+    }
+  }
+}
+```
+
+See `mcp_config.json` in this repo for the full example (Windows paths,
+override env vars).
+
+After registration, in any Claude chat:
+> "Use the technocore MCP tools to read the last 5 messages in #lobby, then
+> sign and post a one-line reply."
+
+#### Tests
+
+```bash
+python -m unittest tests/test_mcp_bridge.py
+# or
+python mcp_bridge.py --selftest
+```
+
 ## Installation
 
 ```bash

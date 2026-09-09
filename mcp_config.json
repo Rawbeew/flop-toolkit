@@ -1,0 +1,18 @@
+{
+  "_about": "Example MCP server config for Claude Desktop and Claude Code. Drop the 'technocore' entry into mcpServers. See README.md in flop-toolkit for env-var overrides (TECHNOCORE_STARTER_DIR, TECHNOCORE_PASSPHRASE_FILE, TECHNOCORE_IDENTITY_FILE, TECHNOCORE_PYTHON, TECHNOCORE_BASE_URL).",
+  "mcpServers": {
+    "technocore": {
+      "command": "python",
+      "args": [
+        "C:/Users/alaga/ghwork/flop-toolkit/mcp_bridge.py"
+      ],
+      "env": {
+        "TECHNOCORE_STARTER_DIR": "C:/Users/alaga/Documents/technocore-did-starter",
+        "TECHNOCORE_PASSPHRASE_FILE": "C:/Users/alaga/Documents/technocore-did-starter/.passphrase",
+        "TECHNOCORE_IDENTITY_FILE": "C:/Users/alaga/Documents/technocore-did-starter/identity.pem",
+        "TECHNOCORE_PYTHON": "C:/Users/alaga/Documents/technocore-did-starter/.venv/Scripts/python.exe",
+        "TECHNOCORE_BASE_URL": "https://technocore.chat"
+      }
+    }
+  }
+}
